@@ -89,7 +89,7 @@ class MAGESHBL_Admin {
 
     protected function addAjaxHandlers()
     {
-        function magefan_shopifyblogexport_data_extractor() {
+        function mageshbl_magefan_shopifyblogexport_data_extractor() {
 
             require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/export.php';
 
@@ -98,7 +98,7 @@ class MAGESHBL_Admin {
                 wp_send_json_error('Invalid nonce.');
             }
 
-            $export = new Export();
+            $export = new MAGESHBL_Export();
             $entity = $_GET['entity'];
             $entitiesLimit = (int)$_GET['entitiesLimit'];
             $export->setEntitiesLimit($entitiesLimit);
@@ -171,9 +171,9 @@ class MAGESHBL_Admin {
 
         }
 
-        add_action('wp_ajax_magefan_shopifyblogexport_data_extractor', 'magefan_shopifyblogexport_data_extractor');
+        add_action('wp_ajax_magefan_shopifyblogexport_data_extractor', 'mageshbl_magefan_shopifyblogexport_data_extractor');
 
-        function magefan_shopifyblogexport_push_data_to_shopify()
+        function mageshbl_magefan_shopifyblogexport_push_data_to_shopify()
         {
             if (!isset($_POST['mageshbl_nonce']) ||
                 !wp_verify_nonce(sanitize_text_field($_POST['mageshbl_nonce']), 'magefan_export_action')) {
@@ -194,64 +194,64 @@ class MAGESHBL_Admin {
 
             if (in_array($entity, ['media_post', 'media_author'])) {
                 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/shopify-media-pusher.php';
-                $shopifyMediaPusher = new ShopifyMediaPusher;
+                $Mageshbl_ShopifyMediaPusher = new Mageshbl_ShopifyMediaPusher;
 
-                $status = $shopifyMediaPusher->execute($shopifyUrl, $data, $entity);
+                $status = $Mageshbl_ShopifyMediaPusher->execute($shopifyUrl, $data, $entity);
             }
             else {
                 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/shopify-pusher.php';
-                $shopifyPusher = new ShopifyPusher;
+                $MAGESHBL_ShopifyPusher = new MAGESHBL_ShopifyPusher;
 
-                $status = $shopifyPusher->execute($shopifyUrl, $data, $entity);
+                $status = $MAGESHBL_ShopifyPusher->execute($shopifyUrl, $data, $entity);
             }
 
             wp_send_json_success([$status]);
         }
 
-        add_action('wp_ajax_magefan_shopifyblogexport_push_data_to_shopify', 'magefan_shopifyblogexport_push_data_to_shopify');
+        add_action('wp_ajax_magefan_shopifyblogexport_push_data_to_shopify', 'mageshbl_magefan_shopifyblogexport_push_data_to_shopify');
     }
 
     protected function addAdminPages()
     {
         if (is_admin()) {
-            function mf_add_custom_link_to_admin_menu()
+            function mageshbl_mf_add_custom_link_to_admin_menu()
             {
                 add_menu_page(
                     'Export to Magefan Blog Form', // Page title
                     'Export to Magefan Blog',      // Menu title
                     'manage_options',   // Capability
                     'magefan-blog-export-form', // Menu slug
-                    'mf_custom_link_page', // Callback function to display the page content
+                    'mageshbl_mf_custom_link_page', // Callback function to display the page content
                     'dashicons-admin-links', // Icon URL or dashicon name
                     99                  // Position in the menu
                 );
             }
 
-            function mf_custom_link_page()
+            function mageshbl_mf_custom_link_page()
             {
                 include_once plugin_dir_path(dirname(__FILE__)) . 'includes/form.php';
             }
 
-            add_action('admin_menu', 'mf_add_custom_link_to_admin_menu');
+            add_action('admin_menu', 'mageshbl_mf_add_custom_link_to_admin_menu');
 
-            function mf_add_push_page()
+            function mageshbl_mf_add_push_page()
             {
                 add_submenu_page(
                     null, // No parent menu
                     'My Hidden Page', // Page title
                     'My Hidden Page', // Menu title (not displayed)
                     'manage_options', // Capability
-                    'mf-push-page', // Menu slug
-                    'mf_add_push_page_content' // Function to display content
+                    'mageshbl_mf-push-page', // Menu slug
+                    'mageshbl_mf_add_push_page_content' // Function to display content
                 );
             }
 
-            function mf_add_push_page_content()
+            function mageshbl_mf_add_push_page_content()
             {
                 include_once plugin_dir_path(dirname(__FILE__)) . 'includes/pusher-page.php';
             }
 
-            add_action('admin_menu', 'mf_add_push_page');
+            add_action('admin_menu', 'mageshbl_mf_add_push_page');
         }
     }
 }

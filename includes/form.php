@@ -62,7 +62,7 @@ if (!defined('ABSPATH')) exit; // Exit if accessed directly
 <?php
 wp_register_script('mageshbl-inline-js', false, ['jquery'], false, true);
 wp_enqueue_script('mageshbl-inline-js');
-$inline_js = "
+$mageshbl_inline_js = "
         document.addEventListener('DOMContentLoaded', function() {
             const destination = document.getElementById('destination');
             if (!destination) return;
@@ -85,5 +85,5 @@ $inline_js = "
             });
         });
     ";
-wp_add_inline_script('mageshbl-inline-js', $inline_js);
+wp_add_inline_script('mageshbl-inline-js', $mageshbl_inline_js);
 ?>

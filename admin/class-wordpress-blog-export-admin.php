@@ -93,16 +93,16 @@ class MAGESHBL_Admin {
 
             require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/export.php';
 
-            if (!isset($_GET['mageshbl_nonce']) ||
-                !wp_verify_nonce(sanitize_text_field($_GET['mageshbl_nonce']), 'magefan_export_action')) {
+            $mageshbl_nonce = isset($_GET['mageshbl_nonce']) ? sanitize_text_field(wp_unslash($_GET['mageshbl_nonce'])) : '';
+            if (!wp_verify_nonce($mageshbl_nonce, 'magefan_export_action')) {
                 wp_send_json_error('Invalid nonce.');
             }
 
             $export = new MAGESHBL_Export();
-            $entity = $_GET['entity'];
-            $entitiesLimit = (int)$_GET['entitiesLimit'];
+            $entity = isset($_GET['entity']) ? sanitize_text_field(wp_unslash($_GET['entity'])) : '';
+            $entitiesLimit = isset($_GET['entitiesLimit']) ? (int) absint(wp_unslash($_GET['entitiesLimit'])) : 0;
             $export->setEntitiesLimit($entitiesLimit);
-            $offSet = (int)($_GET['offset'] ?? 1);
+            $offSet = isset($_GET['offset']) ? (int) absint(wp_unslash($_GET['offset'])) : 1;
             $allIds = isset($_GET['allIds']);
 
 
@@ -175,14 +175,14 @@ class MAGESHBL_Admin {
 
         function mageshbl_magefan_shopifyblogexport_push_data_to_shopify()
         {
-            if (!isset($_POST['mageshbl_nonce']) ||
-                !wp_verify_nonce(sanitize_text_field($_POST['mageshbl_nonce']), 'magefan_export_action')) {
+            $mageshbl_nonce = isset($_POST['mageshbl_nonce']) ? sanitize_text_field(wp_unslash($_POST['mageshbl_nonce'])) : '';
+            if (!wp_verify_nonce($mageshbl_nonce, 'magefan_export_action')) {
                 wp_send_json_error('Invalid nonce.');
             }
 
-            $entity = (string)($_POST['entity'] ?? '');
-            $shopifyUrl = (string)($_POST['shopifyUrl'] ?? '');
-            $data = ($_POST['data'] ?? '');
+            $entity = isset($_POST['entity']) ? sanitize_text_field(wp_unslash($_POST['entity'])) : '';
+            $shopifyUrl = isset($_POST['shopifyUrl']) ? esc_url_raw(wp_unslash($_POST['shopifyUrl'])) : '';
+            $data = isset($_POST['data']) ? sanitize_text_field(wp_unslash($_POST['data'])) : '';
 
             if (!$entity
                 || !$shopifyUrl

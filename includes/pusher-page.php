@@ -36,13 +36,13 @@ wp_add_inline_style('mageshbl-inline-css', $mageshbl_custom_css);
 
 <?php
 
-$magentoDomain = isset($_POST['magento_domain']) ? sanitize_text_field(wp_unslash($_POST['magento_domain'])) : '';
-$destination = isset($_POST['destination']) ? sanitize_text_field(wp_unslash($_POST['destination'])) : '';
-$shopifyImportKey = isset($_POST['shopify_import_key']) ? sanitize_text_field(wp_unslash($_POST['shopify_import_key'])) : '';
-$entitiesLimit = isset($_POST['entities_limit']) ? sanitize_text_field(wp_unslash($_POST['entities_limit'])) : '';
+$mageshbl_magentoDomain = isset($_POST['magento_domain']) ? sanitize_text_field(wp_unslash($_POST['magento_domain'])) : '';
+$mageshbl_destination = isset($_POST['destination']) ? sanitize_text_field(wp_unslash($_POST['destination'])) : '';
+$mageshbl_shopifyImportKey = isset($_POST['shopify_import_key']) ? sanitize_text_field(wp_unslash($_POST['shopify_import_key'])) : '';
+$mageshbl_entitiesLimit = isset($_POST['entities_limit']) ? sanitize_text_field(wp_unslash($_POST['entities_limit'])) : '';
 
-if ($magentoDomain) {
-    $magentoDomain = rtrim($magentoDomain, '/') . '/';
+if ($mageshbl_magentoDomain) {
+    $mageshbl_magentoDomain = rtrim($mageshbl_magentoDomain, '/') . '/';
 }
 
 function Mageshbl_getExporterKey() {
@@ -56,8 +56,8 @@ function Mageshbl_getExporterKey() {
     return $string;
 }
 
-$shopifyUrl = $destination === 'magento'
-        ? esc_url($magentoDomain . 'rest/V1/magefan-blogimport/wpimport')
+$mageshbl_shopifyUrl = $mageshbl_destination === 'magento'
+        ? esc_url($mageshbl_magentoDomain . 'rest/V1/magefan-blogimport/wpimport')
         : 'https://blog.sfapp.magefan.top/blog/import';
 ?>
 <?php
@@ -69,9 +69,9 @@ $mageshbl_inline_js = '
 
         var ajaxurl = "' . esc_url(admin_url('admin-ajax.php')) .'";
         var pushDataToShopify = ajaxurl;
-        var shopifyUrl = "' . $shopifyUrl . '";
-        var importKey = "' . esc_js($shopifyImportKey) . '";
-        var entitiesLimit = "' . esc_js($entitiesLimit) . '";
+        var shopifyUrl = "' . $mageshbl_shopifyUrl . '";
+        var importKey = "' . esc_js($mageshbl_shopifyImportKey) . '";
+        var entitiesLimit = "' . esc_js($mageshbl_entitiesLimit) . '";
         var exporterKey = "' . esc_js(Mageshbl_getExporterKey()) . '";
         var closedConnection = false;
         var indexPageUrl = "' . esc_url(admin_url('admin.php?page=magefan-blog-export-form')) . '";

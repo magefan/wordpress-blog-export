@@ -6,10 +6,16 @@
 ?>
 <?php
 if (!defined('ABSPATH')) exit; // Exit if accessed directly
+$mageshbl_nonce = isset($_POST['mageshbl_nonce'])
+        ? sanitize_text_field(wp_unslash($_POST['mageshbl_nonce']))  // розсашуємо дані
+        : '';
 
+if (!wp_verify_nonce($mageshbl_nonce, 'magefan_export_action')) {
+    wp_die('Nonce verification failed.');
+}
 wp_register_style('mageshbl-inline-css', false);
 wp_enqueue_style('mageshbl-inline-css');
-$custom_css = "
+$mageshbl_custom_css = "
     #myProgress {
         width: 500px;
         background-color: grey;
@@ -21,7 +27,7 @@ $custom_css = "
         background-color: green;
     }
 ";
-wp_add_inline_style('mageshbl-inline-css', $custom_css);
+wp_add_inline_style('mageshbl-inline-css', $mageshbl_custom_css);
 ?>
 
 <div id="myProgress">
@@ -30,8 +36,16 @@ wp_add_inline_style('mageshbl-inline-css', $custom_css);
 
 <?php
 
-function getExporterKey()
-{
+$mageshbl_magentoDomain = isset($_POST['magento_domain']) ? sanitize_text_field(wp_unslash($_POST['magento_domain'])) : '';
+$mageshbl_destination = isset($_POST['destination']) ? sanitize_text_field(wp_unslash($_POST['destination'])) : '';
+$mageshbl_shopifyImportKey = isset($_POST['shopify_import_key']) ? sanitize_text_field(wp_unslash($_POST['shopify_import_key'])) : '';
+$mageshbl_entitiesLimit = isset($_POST['entities_limit']) ? sanitize_text_field(wp_unslash($_POST['entities_limit'])) : '';
+
+if ($mageshbl_magentoDomain) {
+    $mageshbl_magentoDomain = rtrim($mageshbl_magentoDomain, '/') . '/';
+}
+
+function Mageshbl_getExporterKey() {
     $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
     $string = '';
 
@@ -42,25 +56,23 @@ function getExporterKey()
     return $string;
 }
 
-$magentoDomain = $_POST['magento_domain'] ?? '';
-if ($magentoDomain) {
-    $magentoDomain = rtrim($magentoDomain, '/') . '/';
-}
-
+$mageshbl_shopifyUrl = $mageshbl_destination === 'magento'
+        ? esc_url($mageshbl_magentoDomain . 'rest/V1/magefan-blogimport/wpimport')
+        : 'https://blog.sfapp.magefan.top/blog/import';
 ?>
 <?php
 wp_register_script('mageshbl-pusher-inline-js', false, ['jquery'], false, true);
 wp_enqueue_script('mageshbl-pusher-inline-js');
-$inline_js = '
+$mageshbl_inline_js = '
     jQuery(document).ready(function() {
         alert("Don\'t leave the page !");
 
         var ajaxurl = "' . esc_url(admin_url('admin-ajax.php')) .'";
         var pushDataToShopify = ajaxurl;
-        var shopifyUrl = "' . esc_url($_POST['destination'] == 'magento' ? $magentoDomain . 'rest/V1/magefan-blogimport/wpimport' : 'https://blog.sfapp.magefan.top/blog/import') . '";
-        var importKey = "' . esc_js((sanitize_text_field($_POST['shopify_import_key']) ?? '')) . '";
-        var entitiesLimit = "' . esc_js((sanitize_text_field($_POST['entities_limit']) ?? '')) . '";
-        var exporterKey = "' . esc_js(getExporterKey()) . '";
+        var shopifyUrl = "' . $mageshbl_shopifyUrl . '";
+        var importKey = "' . esc_js($mageshbl_shopifyImportKey) . '";
+        var entitiesLimit = "' . esc_js($mageshbl_entitiesLimit) . '";
+        var exporterKey = "' . esc_js(Mageshbl_getExporterKey()) . '";
         var closedConnection = false;
         var indexPageUrl = "' . esc_url(admin_url('admin.php?page=magefan-blog-export-form')) . '";
         var mageshbl_nonce = "' . wp_create_nonce('magefan_export_action') . '";
@@ -247,5 +259,5 @@ $inline_js = '
         });
     });
 ';
-wp_add_inline_script('mageshbl-pusher-inline-js', $inline_js);
+wp_add_inline_script('mageshbl-pusher-inline-js', $mageshbl_inline_js);
 ?>

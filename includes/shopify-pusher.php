@@ -4,7 +4,7 @@
  * Please visit Magefan.com for license details (https://magefan.com/end-user-license-agreement).
  */
 
-class ShopifyPusher
+class MAGESHBL_ShopifyPusher
 {
     protected $curl;
 

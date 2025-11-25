@@ -9,6 +9,9 @@ if (!defined('ABSPATH')) exit; // Exit if accessed directly
 ?>
 <h1>Export to Magefan Blog</h1>
 <form method="post" action="<?php echo esc_url( admin_url( 'admin.php?page=mf-push-page' ) ); ?>">
+    <?php
+    wp_nonce_field( 'magefan_export_action', 'mageshbl_nonce' );
+    ?>
     <!-- Your HTML form fields go here -->
     <input type="hidden" name="action" value="mf_handle_form_submission">
 
@@ -62,7 +65,7 @@ if (!defined('ABSPATH')) exit; // Exit if accessed directly
 <?php
 wp_register_script('mageshbl-inline-js', false, ['jquery'], false, true);
 wp_enqueue_script('mageshbl-inline-js');
-$inline_js = "
+$mageshbl_inline_js = "
         document.addEventListener('DOMContentLoaded', function() {
             const destination = document.getElementById('destination');
             if (!destination) return;
@@ -85,5 +88,5 @@ $inline_js = "
             });
         });
     ";
-wp_add_inline_script('mageshbl-inline-js', $inline_js);
+wp_add_inline_script('mageshbl-inline-js', $mageshbl_inline_js);
 ?>

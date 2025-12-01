@@ -4,7 +4,7 @@
  * Please visit Magefan.com for license details (https://magefan.com/end-user-license-agreement).
  */
 
-class ShopifyMediaPusher
+class Mageshbl_ShopifyMediaPusher
 {
     public function execute(string $url, string $data, string $entity) {
         $decodedData = json_decode($data,true);

@@ -5,7 +5,7 @@
  * Please visit Magefan.com for license details (https://magefan.com/end-user-license-agreement).
  */
 
-class Export
+class MAGESHBL_Export
 {
     const ENTITIES_PER_PAGE = 100;
 
@@ -444,7 +444,7 @@ class Export
             );*/
 
             /** This filter is documented in wp-includes/post-template.php */
-            $content = apply_filters( 'the_content', str_replace( ']]>', ']]&gt;', $content ) );
+            $content = apply_filters( 'mageshbl_the_content', str_replace( ']]>', ']]&gt;', $content ) );
 
             $content = $this->wordpressOutoutWrap($content);
 
